@@ -32,11 +32,29 @@ export async function exportToPDF(
         exportButton.style.display = 'none';
     }
 
+    // Ajustar o layout para exibir métricas lado a lado como no site
+    const campaignSections = reportElement.querySelectorAll('.campaign-section');
+    campaignSections.forEach(section => {
+        const metricCards = section.querySelectorAll('.metric-card');
+        const gridContainer = document.createElement('div');
+        gridContainer.className = 'grid grid-cols-1 md:grid-cols-4 gap-4';
+        metricCards.forEach(card => gridContainer.appendChild(card));
+        section.innerHTML = '';
+        section.appendChild(gridContainer);
+    });
+
     // Capturar o relatório como imagem usando html2canvas
     const canvas = await html2canvas(reportElement, {
         scale: 2, // Aumentar a resolução para melhor qualidade
         useCORS: true, // Permitir carregar imagens externas (como as dos anúncios)
         logging: true, // Para depuração, pode desativar depois
+    });
+
+    // Restaurar o layout original após a captura
+    campaignSections.forEach(section => {
+        const metricCards = section.querySelectorAll('.metric-card');
+        section.innerHTML = '';
+        metricCards.forEach(card => section.appendChild(card));
     });
 
     // Restaurar o botão "Exportar para PDF"
